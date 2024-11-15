@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
     borderRadius: 5,
     paddingLeft: 10,
-    marginBottom: 10, // Space between inputs
+    marginBottom: 10, 
   },
   btnPrimary: {
     width: "100%",
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#34E0A1",
-    marginBottom: 10, // Space below button
+    marginBottom: 10, 
   },
   btnTextPrimary: {
     fontSize: 15,
