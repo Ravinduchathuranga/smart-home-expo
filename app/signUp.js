@@ -1,10 +1,17 @@
-import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, Pressable } from 'react-native';
-import React from 'react';
+import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, Pressable, Alert } from 'react-native';
+import React, { useState } from 'react';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 
 export default function SignUp() {
-  const router = useRouter(); 
+  const router = useRouter();
+
+  //user registration
+  const [getName, setName] = useState("");
+  const [getEmail, setEmail] = useState("");
+  const [getPassword, setPassword] = useState("");
+
+
 
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.container}>
@@ -24,16 +31,58 @@ export default function SignUp() {
 
       {/* Fields Section */}
       <View style={styles.fieldContainer}>
-        <TextInput style={styles.txtInput} placeholder="Name" />
-        <TextInput style={styles.txtInput} placeholder="Email" />
-        <TextInput style={styles.txtInput} placeholder="Password" secureTextEntry={true} />
+        <TextInput style={styles.txtInput} inputMode={"text"} placeholder="Name"
+          onChangeText={
+            (text) => {
+              setName(text);
+            }
+          }
+        />
+        <TextInput style={styles.txtInput} inputMode={"email"} placeholder="Email"
+          onChangeText={
+            (text) => {
+              setEmail(text);
+            }
+          }
+        />
+        <TextInput style={styles.txtInput} placeholder="Password" secureTextEntry={true}
+          onChangeText={
+            (text) => {
+              setPassword(text);
+            }
+          }
+        />
 
         {/* Create Account Button */}
         <Pressable
           style={styles.btnPrimary}
-          onPress={() => {
-            router.push("home/index");
-          }}
+          onPress={
+            async () => {
+              let formData = new FormData();
+              formData.append("name", getName);
+              formData.append("email", getEmail);
+              formData.append("password", getPassword);
+              try {
+                let response = await fetch(process.env.EXPO_PUBLIC_API_URL + "/smart-home/SignUp",
+                  {
+                    method: 'POST',
+                    body: formData
+                  }
+                );
+                if (response.ok) {
+                  let data = await response.json();
+                  if (data.success) {
+                    Alert.alert("Success", data.message)
+                    router.replace("/signIn");
+                  } else {
+                    Alert.alert("Error", data.message)
+                  }
+                }
+              } catch (error) {
+                console.log(error);
+              }
+            }
+          }
         >
           <Text style={styles.btnTextPrimary}>Create an account</Text>
         </Pressable>
@@ -42,7 +91,7 @@ export default function SignUp() {
         <Pressable
           style={styles.btnSecondary}
           onPress={() => {
-            router.push("/signIn"); 
+            router.push("/signIn");
           }}
         >
           <Text style={styles.btnTextSecondary}>Log In</Text>
@@ -57,15 +106,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     backgroundColor: "white",
+    padding: 10,
   },
   header: {
     flexDirection: "row",
-    justifyContent:"center",
-    alignItems: "center",    
+    justifyContent: "center",
+    alignItems: "center",
   },
   headerImg: {
     width: 80,
-    height: 80,    
+    height: 80,
   },
   headerText: {
     fontSize: 28,
@@ -78,7 +128,7 @@ const styles = StyleSheet.create({
   bannerHeader: {
     fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 5, 
+    marginBottom: 5,
   },
   bannerText: {
     fontSize: 14,
@@ -93,7 +143,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
     borderRadius: 5,
     paddingLeft: 10,
-    marginBottom: 10, 
+    marginBottom: 10,
   },
   btnPrimary: {
     width: "100%",
@@ -102,11 +152,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#34E0A1",
-    marginBottom: 10, 
+    marginBottom: 10,
   },
   btnTextPrimary: {
     fontSize: 15,
-    fontWeight: "bold",    
+    fontWeight: "bold",
   },
   btnSecondary: {
     width: "100%",
@@ -121,6 +171,6 @@ const styles = StyleSheet.create({
   btnTextSecondary: {
     fontSize: 15,
     fontWeight: "bold",
-    
+
   },
 });

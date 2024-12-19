@@ -1,12 +1,28 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
-
+import { router, useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function index() {
+  const router = useRouter();
 
+  useEffect(
+    () => {
+      async function checkUser() {
+        try {
+          let user = await AsyncStorage.getItem("user");
+          if (user) {
+            router.replace("/home");
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      checkUser();
+    }, []
+  );
   return (
     <SafeAreaView style={styles.mainContainer}>
       <Image source={require("../assets/Logo.png")} style={styles.imgContainer} />
